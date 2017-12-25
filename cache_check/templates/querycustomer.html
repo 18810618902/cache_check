@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cache_Check</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+
+    <style>
+   .dataTable td {   
+               white-space: nowrap !important;  
+         } 
+    td{
+        height:40px;
+    }
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h3>[ Query_Customer_Info ]</h3>
+        <br>
+        <form class="form-horizontal">
+	     <div class="form-group">
+	       <label  class="col-sm-1 control-label">Customer</label>
+	       <div class="col-sm-5">
+	         <input  class="form-control" id="customer_name" name="customer_name"  placeholder="Name">
+	       </div>
+	     </div>
+
+
+               <div class="form-group">
+                  <div class="col-sm-offset-1 col-sm-5">
+                    <button type="submit" class="btn btn-success" id='sub_yes'>Yes</button>
+                  </div>
+               </div>
+        </form>
+
+    </div>
+
+ <table id="example" class="display" width="100%" cellspacing="0">
+
+
+        <!-- Mainly scripts -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+
+    <script>
+         $('#sub_yes').on('click', function(){
+               var post_data = $('#customer_name').val()
+               $.post('/querycustomer/',{customer_name:post_data}, function(data){
+               data = JSON.parse(data)
+               var  table_header = " <thead>  <tr>  <th>Domain</th> <th>site_id</th> <th>service</th> <th>shielded</th> <th>product_key</th> <th>origin</th>  <th>static_origin_ip</th>  <th>customer_origin_port</th> <th>custom_host_header</th>  </tr> </thead><tbody>"
+                var table_body = ''
+                $.each(data, function(i,dict){ 
+                      table_body += " <tr> <td>" + dict.domain +"</td> <td>" +  dict.site_id  + "</td> <td>" +  dict.service  + "</td> <td>" +  dict.shielded  +"</td> <td>" +  dict.product_key  +"</td> <td>" +  dict.origin  +"</td> <td>" +  dict.static_origin_ip  +"</td> <td>" +  dict.custom_origin_port  +"</td> <td>" +  dict.custom_host_header  + "</td></tr>" 
+
+              })
+
+               var table_all = table_header + table_body + '</tbody>'
+               if ($('#example').hasClass('dataTable')) {
+                    dttable = $('#example').dataTable();
+                    dttable.fnClearTable(); //清空一下table
+                    dttable.fnDestroy(); //还原初始化了的datatable
+                }
+
+
+                $('#example').html(table_all)
+                $(document).ready(function() {
+                    $('#example').DataTable({ 
+                          "paging":   false,
+                          "ordering": false,
+                          "info":     false                 
+       
+                       });
+                  } );
+             
+            })          
+            return false
+         })
+
+    </script>
+
+
+
+</body>
+</html>

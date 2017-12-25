@@ -1,0 +1,41 @@
+
+<thead>
+    <tr>
+        {% for head in table_header.origin.keys %}
+            <th>
+                {{ head }}
+            </th>
+        {% endfor %}
+    </tr>
+</thead>
+
+<tbody>
+    <tr>
+    {% for v in table_header.origin.values %}
+        <td style="white-space: nowrap">{{ v }}</td>
+    {% endfor %}
+    </tr>
+</tbody>
+
+
+
+
+<thead>
+    <tr align="center">
+        {% for head in table_header.edge.0.keys %}
+            <th style="white-space: nowrap ">
+                {{ head }}
+            </th>
+        {% endfor %}
+    </tr>
+</thead>
+
+<tbody>
+    {% for v in table_header.edge %}
+    <tr>
+        {% for k in v.values %}
+            <td style="white-space: nowrap">{{ k }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</tbody>

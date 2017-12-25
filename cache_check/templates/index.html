@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cache_Check</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+
+    <style>
+    td{
+        height:40px;
+    }
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h3>[ Cache_Check_SYS ]</h3>
+        <br>
+        <form class="form-horizontal check" id="check_form">
+
+              <!-- url 输入框 -->
+              <div class="form-group has-success ">
+                <label for="inputEmail3" class="col-md-1 control-label">URL</label>
+                <div class="col-md-10">
+                  <input required="required"  type="text" class="form-control" id="input_url" name="url" placeholder="Url">
+                </div>
+              </div>
+
+              <!-- 源站输入框 -->
+              <div class="form-group has-warning ">
+                <label for="inputPassword3" class="col-sm-1 control-label">Origin</label>
+                <div class="col-sm-4">
+                  <input required="required" type="text" class="form-control" id="input_origin" name="origin" placeholder="Orign">
+                </div>
+              </div>
+
+                <!-- select选择框 -->
+              <div class="form-group">
+                <label for="inputPassword3" class="col-sm-1 control-label">Edge</label>
+                <div class="col-sm-2">
+                  <select id='mySelect' class="form-control" id="input_select" name="service_id">
+                     {% for service_name in service_list %}
+                        <option  value={{ service_name.1 }}> {{ service_name.1 }} </option>
+                     {% endfor %}
+
+                   </select>
+                </div>
+
+                    <label>
+                      <input type="checkbox" id="input_nali" name="nali" value=''>nali 
+                    </label>
+
+
+                   <button id="get_ip_list" type="button" class="btn btn-primary btn-xs">get_ip_list</button>
+              </div>
+
+              <!-- GET/HEAD 选择框 -->
+              <div class="form-group" >
+                <label for="inputPassword3" class="col-sm-1 control-label">Method</label>
+                <div class="col-md-1">
+                  <select class="form-control" style="width: 85px" id="input_select" name="method">
+                      <option>GET</option>
+                      <option selected="selected">HEAD</option>
+                  </select>
+                </div>
+              </div>
+
+                <!-- no-cache 标签 -->
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="input_cache_control" name="cache_control"> Cache-Control=no-cache
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 提交按钮 -->
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-10">
+                  <button type="submit" class="btn btn-success" id="btn_check">Check</button>
+                </div>
+              </div>
+        </form>
+
+
+    <br>
+    <br>
+    <table id="example" class="display" width="50%" cellspacing="0">
+
+    </table>
+    </div>
+    <table id="get_header" class="table table-hover">
+
+
+
+        <!-- Mainly scripts -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+
+    <script>
+        function get_ip_List() {
+            $.get('/headerinfo/table_ip_list/', function (data) {
+
+                if ($('#example').hasClass('dataTable')) {
+                    dttable = $('#example').dataTable();
+                    dttable.fnClearTable(); //清空一下table
+                    dttable.fnDestroy(); //还原初始化了的datatable
+                }
+
+                $('#get_header').attr("hidden")
+
+                $('#example').html(data)
+                $(document).ready(function() {
+                    $('#example').DataTable({
+                          "paging":   false,
+                          "ordering": false,
+                          "info":     false
+
+                    });
+                  } );
+            })
+
+        }
+
+        $('#get_ip_list').on('click', function () {
+              var get_id = $('#mySelect').val()
+              if($('#input_nali').is(':checked')) {
+		   var nali = 'on' 
+  		}
+	      else
+                {
+                   var nali = 'off'
+		}
+
+
+              $.post('/headerinfo/get_ip_list/',{'service_id':get_id, 'nali':nali}, function(data){
+                  swal("SUCCESS!!", "注意nali功能大概需要两分钟！");
+                if ($('#example').hasClass('dataTable')) {
+                    dttable = $('#example').dataTable();
+                    dttable.fnClearTable(); //清空一下table
+                    dttable.fnDestroy(); //还原初始化了的datatable
+                }
+                  get_ip_List()
+              })
+
+        })
+
+
+
+
+      $('#btn_check').on('click', function () {
+          if ($('#input_url').val() == ""){
+               swal("ERROR!", "Url can not be empty!");
+               return false;
+              }
+          post_data = $('#check_form').serialize()
+          console.log(post_data)
+
+          swal({ 
+                  title: "预计需要 2mins", 
+                  text: "5秒后自动关闭。", 
+                  timer: 5000, 
+                  showConfirmButton: false 
+                });	
+
+          $.post('/headerinfo/get_headers_md5/', post_data, function (data) {
+          swal({ 
+                  title: "获取数据成功！", 
+                  timer: 2000, 
+                  showConfirmButton: false 
+                });	
+
+              $('#get_header').html(data)
+          })
+
+          return false
+
+      })
+
+    </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+
+        <thead>
+            <tr>
+                <th>IP</th>
+                <th>地理位置</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for k,v in ip_list.items %}
+
+            <tr>
+
+                <td>{{ k }}</td>
+                <td>{{ v }}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+
